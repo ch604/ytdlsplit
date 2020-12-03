@@ -11,14 +11,6 @@ error() {
 	exit 254
 }
 
-ytdl_detect() {
-	which youtube-dl &> /dev/null
-}
-
-ffmpeg_detect() {
-	which ffmpeg &> /dev/null
-}
-
 printhelp() {
 	echo "ytdlsplit - youtube-dl ffmpeg wrapper for splitting video mp3s
 at description timestamps
@@ -72,6 +64,10 @@ makeitseconds() {
 	unset hr min sec n
 }
 
+#now we start the main program!
+if [ ! "$(which youtube-dl 2> /dev/null)" ] || [ ! "$(which ffmpeg 2> /dev/null)" ]; then
+	error "i couldnt find youtube-dl or ffmpeg binaries!"
+fi
 argparse "$@"
 #find and make directory
 [ ! -d $output ] && echo "creating storage directory..." && mkdir -p $output
