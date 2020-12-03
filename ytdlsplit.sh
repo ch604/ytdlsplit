@@ -89,19 +89,20 @@ youtube-dl --ignore-errors --format bestaudio --extract-audio --audio-format mp3
 #calculate song lengths and split the source mp3
 echo "splitting..."
 i=1
+sigdig=$(($(cat $timestamps | wc -l | wc -w) - 1))
 while read -u9 line; do
-	filename=$(echo $line | awk '{print substr($0,index($0,$2))}' | tr '/' '_')
+	filename="$(printf "%0"$sigdig"d\n" $i) - $(echo $line | awk '{print substr($0,index($0,$2))}' | tr '/' '_')"
 	starttime=$(echo $line | awk '{print $1}' | makeitseconds)
 	#echo "my starttime is $(echo $line | awk '{print $1}') converted to $starttime"
 	endtime=$(grep -A1 -e "$line" $timestamps | tail -1 | awk '{print $1}' | makeitseconds)
 	#echo "my endtime is $(grep -A1 -e "$line" $timestamps | tail -1 | awk '{print $1}') converted to $endtime"
 	length=$(($endtime - $starttime))
 	if [ $length -ne 0 ]; then
-		echo " writing file "$i - $filename" from $starttime for $length seconds..."
-		ffmpeg -hide_banner -loglevel warning -ss $starttime -t $length -i $output/temp.mp3 "$output/$i - $filename.mp3"
+		echo " writing file "$filename" from $starttime for $length seconds..."
+		ffmpeg -hide_banner -loglevel warning -ss $starttime -t $length -i $output/temp.mp3 "$output/$filename.mp3"
 	else
-		echo " writing file "$i - $filename" from $starttime for remainder of track..."
-		ffmpeg -hide_banner -loglevel warning -ss $starttime -i $output/temp.mp3 "$output/$i - $filename.mp3"
+		echo " writing file "$filename" from $starttime for remainder of track..."
+		ffmpeg -hide_banner -loglevel warning -ss $starttime -i $output/temp.mp3 "$output/$filename.mp3"
 	fi
 	let i+=1
 done 9< $timestamps
