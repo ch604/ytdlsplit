@@ -56,13 +56,21 @@ makeitseconds() {
 	local segments=$(echo $n | tr '[0-9]' '\n' | grep -c \:)
 	if [ $segments -eq 1 ]; then
 		min=$(echo $n | cut -d\: -f1)
+		[ "$min" = "0" ] && min=00
+		min=$(echo $min | sed -e 's/^0//'
 		sec=$(echo $n | cut -d\: -f2)
-		echo $(( ${sec#0} + (${min#0} * 60) ))
+		[ "$sec" = "0" ] && sec=00
+		sec=$(echo $sec | sed -e 's/^0//'
+		echo $(( $sec + ($min * 60) ))
 	elif [ $segments -eq 2 ]; then
 		hr=$(echo $n | cut -d\: -f1)
 		min=$(echo $n | cut -d\: -f2)
+		[ "$min" = "0" ] && min=00
+		min=$(echo $min | sed -e 's/^0//'
 		sec=$(echo $n | cut -d\: -f3)
-		echo $(( ${sec#0} + (${min#0} * 60) + (${hr#0} * 3600) ))
+		[ "$sec" = "0" ] && sec=00
+		sec=$(echo $sec | sed -e 's/^0//'
+		echo $(( $sec + ($min * 60) + ($hr * 3600) ))
 	fi
 	unset hr min sec n
 }
