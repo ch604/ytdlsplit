@@ -6,9 +6,6 @@
 #ensure ffmpeg installed and supports all required flags (min ver)
 #ensure mp3 libs installed for writing output
 
-#-o $output folder
-#-u $url quoted url of video
-
 error() {
 	echo "ERROR: $1" >&2
 	exit 254
@@ -76,6 +73,8 @@ makeitseconds() {
 }
 
 argparse "$@"
+#find and make directory
+[ ! -d $output ] && echo "creating storage directory..." && mkdir -p $output
 #get timestamps
 echo "scraping timestamps..."
 timestamps=$(mktemp)
