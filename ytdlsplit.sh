@@ -48,10 +48,28 @@ argparse() {
 			?) error "Unknown option ${OPTARG}";;
 		esac
 	done
+	[ -z "$url" -o -z "$output" ] && error "i'm missing something..."
 }
 
-argparse
+makeitseconds() {
+	n=$(cat)
+	local segments=$(echo $n | tr '[0-9]' '\n' | grep -c \:)
+	if [ $segments -eq 1 ]; then
+		min=$(echo $n | cut -d\: -f1)
+		sec=$(echo $n | cut -d\: -f2)
+		echo $(( ${sec#0} + (${min#0} * 60) ))
+	elif [ $segments -eq 2 ]; then
+		hr=$(echo $n | cut -d\: -f1)
+		min=$(echo $n | cut -d\: -f2)
+		sec=$(echo $n | cut -d\: -f3)
+		echo $(( ${sec#0} + (${min#0} * 60) + (${hr#0} * 3600) ))
+	fi
+	unset hr min sec n
+}
+
+argparse "$@"
 #get timestamps
+echo "scraping timestamps..."
 timestamps=$(mktemp)
 youtube-dl --get-description "$url" 2> /dev/null | awk '{for(i=1; i<=NF; i++){if($i~/[0-9]+\:[0-9]+/){print substr($0,index($0,$i))}}}' > $timestamps
 if egrep -q '^[^0-9]' $timestamps; then
@@ -62,13 +80,32 @@ if egrep -q '^[^0-9]' $timestamps; then
 fi
 
 #download the mp3
+echo "emailing the RIAA..."
 youtube-dl --ignore-errors --format bestaudio --extract-audio --audio-format mp3 --audio-quality 160K --output $output'/temp.mp3' "$url" -q
 
 #calculate song lengths and split the source mp3
-	#count number of colons in first element of line, and convert from minutes:seconds to seconds (or hours:minutes:seconds to seconds)
-	#get the next line and do the same conversion, then subtract to get the length in seconds
-	#use the rest of the original line to formulate a filename
-	#ffmpeg -acodec copy -ss $start_seconds -t $length_seconds $output/temp.mp3 "$output/$i - $filename.mp3"
-	#$i++
+echo "splitting..."
+i=1
+while read -u9 line; do
+	filename=$(echo $line | awk '{print substr($0,index($0,$2))}' | tr '/' '_')
+	starttime=$(echo $line | awk '{print $1}' | makeitseconds)
+	echo "my starttime is $(echo $line | awk '{print $1}') converted to $starttime"
+	endtime=$(grep -A1 -e "$line" $timestamps | tail -1 | awk '{print $1}' | makeitseconds)
+	echo "my endtime is $(grep -A1 -e "$line" $timestamps | tail -1 | awk '{print $1}') converted to $endtime"
+	length=$(($endtime - $starttime))
+	if [ $length -ne 0 ]; then
+		echo " writing file "$i - $filename" from $starttime for $length seconds..."
+		ffmpeg -hide_banner -loglevel warning -ss $starttime -t $length -i $output/temp.mp3 "$output/$i - $filename.mp3"
+	else
+		echo " writing file "$i - $filename" from $starttime for remainder of track..."
+		ffmpeg -hide_banner -loglevel warning -ss $starttime -i $output/temp.mp3 "$output/$i - $filename.mp3"
+	fi
+	let i+=1
+done 9< $timestamps
 
 #cleanup temp.mp3 and $timestamps
+echo "cleaning up..."
+rm -f $output/temp.mp3
+rm -f $timestamps
+
+echo "share and enjoy!"
