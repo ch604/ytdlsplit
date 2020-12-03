@@ -60,6 +60,15 @@ if egrep -q '^[^0-9]' $timestamps; then
 	echo "" >> ./ytdlsplit.err
 	error "bad timestamps detected in description! see ./ytdlsplit.err"
 fi
+
 #download the mp3
-youtube-dl --ignore-errors --format bestaudio --extract-audio --audio-format mp3 --audio-quality 160K --output $output'/temp.%(ext)s' "$url" -q
-#calculate song lengths
+youtube-dl --ignore-errors --format bestaudio --extract-audio --audio-format mp3 --audio-quality 160K --output $output'/temp.mp3' "$url" -q
+
+#calculate song lengths and split the source mp3
+	#count number of colons in first element of line, and convert from minutes:seconds to seconds (or hours:minutes:seconds to seconds)
+	#get the next line and do the same conversion, then subtract to get the length in seconds
+	#use the rest of the original line to formulate a filename
+	#ffmpeg -acodec copy -ss $start_seconds -t $length_seconds $output/temp.mp3 "$output/$i - $filename.mp3"
+	#$i++
+
+#cleanup temp.mp3 and $timestamps
