@@ -97,9 +97,9 @@ i=1
 while read -u9 line; do
 	filename=$(echo $line | awk '{print substr($0,index($0,$2))}' | tr '/' '_')
 	starttime=$(echo $line | awk '{print $1}' | makeitseconds)
-	echo "my starttime is $(echo $line | awk '{print $1}') converted to $starttime"
+	#echo "my starttime is $(echo $line | awk '{print $1}') converted to $starttime"
 	endtime=$(grep -A1 -e "$line" $timestamps | tail -1 | awk '{print $1}' | makeitseconds)
-	echo "my endtime is $(grep -A1 -e "$line" $timestamps | tail -1 | awk '{print $1}') converted to $endtime"
+	#echo "my endtime is $(grep -A1 -e "$line" $timestamps | tail -1 | awk '{print $1}') converted to $endtime"
 	length=$(($endtime - $starttime))
 	if [ $length -ne 0 ]; then
 		echo " writing file "$i - $filename" from $starttime for $length seconds..."
