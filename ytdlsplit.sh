@@ -1,5 +1,6 @@
 #!/bin/bash
 # ytdlsplit.sh
+# version 1.0
 # github.com/ch604/ytdlsplit
 
 #ensure youtube-dl installed and up to date
