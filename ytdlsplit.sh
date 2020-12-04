@@ -88,7 +88,7 @@ if egrep -q '^[^0-9]' $timestamps || [ $(cat $timestamps | sed '/^$/d' | wc -l) 
 	echo "" >> ./ytdlsplit.err
 	error "bad timestamps detected in description! see ./ytdlsplit.err"
 else
-	echo "timestamps looking good!"
+	echo " timestamps looking good!"
 fi
 
 #download the mp3
