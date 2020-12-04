@@ -44,18 +44,19 @@ bash ytdlsplit.sh -u "URL" -o "/path/to/output directory" [-q QUALITY] [-t "path
 - Doesn't support playlists, but you /probably/ wouldn't want to split those at timestamps anyway. Just use youtube-dl.
 - Timestamps are only scraped when they are not wrapped in other characters, like parentheses, and preceed the track name, as follows:
 ```
-00:00 track 1
-next is 02:00 track 2
+00:00 track 1                                 #ideal setup
+next is 2:00 マニキュア                         #unicode is ok!
 
-and then we have 04:03 track 3
+and then we have 04:03 芳野藤丸/Who Are You     #this forward slash will be turned into an underscore
 ```
 Preceeding characters and extra lines are OK, as above. For instance, however, the following formats will not work:
 ```
-track 1 (00:00)
+track 1 00:00                 #timestamp will technically work, but no track title will be given
 
-02:00
+02:00                         #timestamp will technically work, but no track title will be given
 track 2
 
-[04:05] track 3
+[04:05] track 3               #invalid chars joined to timestamp
+6.55 track 4                  #minutes and seconds need to be separated with a colon
 ```
 In these cases, create your own timestamp file and use `-t` option.
