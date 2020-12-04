@@ -12,13 +12,15 @@ printhelp() {
 	echo "ytdlsplit - youtube-dl and ffmpeg wrapper for splitting video
 mp3s at description timestamps
 
-usage: ytdlsplit -u \"URL\" -o path/to/output [-q 0] [-t path/to/timestamps]
+usage: ytdlsplit -u \"URL\" [-o path/to/output] [-q 0] [-t path/to/timestamps]
 
 arguments:
-	-u \"URL\"	quoted URL to youtube-dl compatible video URL
-	-o PATH		path to output directory, will be created if missing
+	-u \"URL\"	quoted URL to youtube-dl compatible video URL.
+	-o PATH		path to output directory, will be created if missing.
+			if not provided, video name will be used in current
+			directory.
 	-q QUALITY	pass a Vx level (0-9) or specific bitrate (192K)
-			for output audio quality (default is 160K)
+			for output audio quality (default is 160K).
 	-t PATH		path to preformatted timestamp file, in the format:
 
 			00:00 trackname
@@ -64,8 +66,9 @@ if [ ! "$(which youtube-dl 2> /dev/null)" ] || [ ! "$(which ffmpeg 2> /dev/null)
 elif ! ffmpeg -hide_banner -formats | grep -q mp3; then
 	error "ffmpeg doesn't seem to support mp3 handling! (see ffmpeg -formats | grep mp3)"
 fi
-[ -z "$url" -o -z "$output" ] && error "i'm missing something... -u and -o are required!"
+[ -z "$url" ] && error "i need a url!"
 [ -z "$quality" ] && quality="160K"
+[ -z "$output" ] && echo "getting video name for output directory..." && output=$(youtube-dl -e "$url")
 
 #find and make directory
 [ ! -d "$output" ] && echo "creating storage directory..." && mkdir -p "$output"
