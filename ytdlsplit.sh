@@ -84,7 +84,7 @@ youtube-dl -i --format bestaudio -x --audio-format mp3 --audio-quality $quality 
 echo "splitting..."
 i=1
 #sigdig to get the number of leading 0's on the track number
-sigdig=$(($(cat $timestamps | wc -l | wc -w) - 1))
+sigdig=$(($(cat $timestamps | wc -l | wc -c) - 1))
 while read -u9 line; do
 	filename="$(printf "%0"$sigdig"d\n" $i) - $(echo $line | awk '{print substr($0,index($0,$2))}' | tr '/' '_')"
 	starttime=$(echo $line | awk '{print $1}' | makeitseconds)
