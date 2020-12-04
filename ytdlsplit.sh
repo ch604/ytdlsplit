@@ -3,11 +3,12 @@
 # version 1.0
 # github.com/ch604/ytdlsplit
 
-#ensure youtube-dl installed and up to date
+#TODO
+#ensure youtube-dl up to date
 #ensure ffmpeg installed and supports all required flags (min ver)
 #ensure mp3 libs installed for writing output
 
-error() {
+error() { #print error and die
 	echo "ERROR: $1" >&2
 	exit 254
 }
@@ -41,37 +42,32 @@ argparse() {
 	[ -z "$url" -o -z "$output" ] && error "i'm missing something..."
 }
 
-makeitseconds() {
-	n=$(cat)
+makeitseconds() { # take a timestamp like 05:08 or 1:15:43 and turn it into integer seconds
+	local n=$(cat)
+	local hr min sec
 	local segments=$(echo $n | tr '[0-9]' '\n' | grep -c \:)
-	if [ $segments -eq 1 ]; then
-		min=$(echo $n | cut -d\: -f1)
-		[ "$min" = "0" ] && min=00
-		min=$(echo $min | sed -e 's/^0//')
-		sec=$(echo $n | cut -d\: -f2)
-		[ "$sec" = "0" ] && sec=00
-		sec=$(echo $sec | sed -e 's/^0//')
+	if [ $segments -eq 1 ]; then #ensure base 10 for numbers like 08
+		min=$((10#$(echo $n | cut -d\: -f1)))
+		sec=$((10#$(echo $n | cut -d\: -f2)))
 		echo $(( $sec + ($min * 60) ))
 	elif [ $segments -eq 2 ]; then
-		hr=$(echo $n | cut -d\: -f1)
-		min=$(echo $n | cut -d\: -f2)
-		[ "$min" = "0" ] && min=00
-		min=$(echo $min | sed -e 's/^0//')
-		sec=$(echo $n | cut -d\: -f3)
-		[ "$sec" = "0" ] && sec=00
-		sec=$(echo $sec | sed -e 's/^0//')
+		hr=$((10#$(echo $n | cut -d\: -f1)))
+		min=$((10#$(echo $n | cut -d\: -f2)))
+		sec=$((10#$(echo $n | cut -d\: -f3)))
 		echo $(( $sec + ($min * 60) + ($hr * 3600) ))
 	fi
-	unset hr min sec n
 }
 
 #now we start the main program!
 if [ ! "$(which youtube-dl 2> /dev/null)" ] || [ ! "$(which ffmpeg 2> /dev/null)" ]; then
-	error "i couldnt find youtube-dl or ffmpeg binaries!"
+	error "I couldnt find youtube-dl or ffmpeg binaries! Please make sure these are installed!"
+elif ! ffmpeg -hide_banner -formats | grep -q mp3; then
+	error "ffmpeg doesn't seem to support mp3 handling! (see ffmpeg -formats | grep mp3)"
 fi
 argparse "$@"
 #find and make directory
 [ ! -d $output ] && echo "creating storage directory..." && mkdir -p $output
+
 #get timestamps
 echo "scraping timestamps..."
 timestamps=$(mktemp)
@@ -90,6 +86,7 @@ youtube-dl --ignore-errors --format bestaudio --extract-audio --audio-format mp3
 #calculate song lengths and split the source mp3
 echo "splitting..."
 i=1
+#sigdig to get the number of leading 0's on the track number
 sigdig=$(($(cat $timestamps | wc -l | wc -w) - 1))
 while read -u9 line; do
 	filename="$(printf "%0"$sigdig"d\n" $i) - $(echo $line | awk '{print substr($0,index($0,$2))}' | tr '/' '_')"
@@ -114,3 +111,4 @@ rm -f $output/temp.mp3
 rm -f $timestamps
 
 echo "share and enjoy!"
+exit 0
