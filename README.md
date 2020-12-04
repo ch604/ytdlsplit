@@ -36,3 +36,4 @@ bash ytdlsplit.sh -u "URL" -o "/path/to/output directory" [-q QUALITY]
 ```
 # Known Issues
 - Older versions of youtube-dl do not support full description download, and may not pull the full tracklist. An upgrade to version 2020.12.02 or later is recommended.
+- Doesn't support playlists, but you /probably/ wouldn't want to split those at timestamps anyway. Just use youtube-dl.
