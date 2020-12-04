@@ -1,6 +1,6 @@
 #!/bin/bash
 # ytdlsplit.sh
-# version 1.0
+# version 1.5
 # github.com/ch604/ytdlsplit
 
 error() { #print error and die
@@ -12,14 +12,18 @@ printhelp() {
 	echo "ytdlsplit - youtube-dl and ffmpeg wrapper for splitting video
 mp3s at description timestamps
 
-usage: ytdlsplit -u \"URL\" -o path/to/output [-q 0]
+usage: ytdlsplit -u \"URL\" -o path/to/output [-q 0] [-t path/to/timestamps]
 
 arguments:
 	-u \"URL\"	quoted URL to youtube-dl compatible video URL
 	-o PATH		path to output directory, will be created if missing
 	-q QUALITY	pass a Vx level (0-9) or specific bitrate (192K)
 			for output audio quality (default is 160K)
+	-t PATH		path to preformatted timestamp file, in the format:
 
+			00:00 trackname
+			03:00 trackname
+			1:00:00 trackname
 "
 exit 0
 }
@@ -31,6 +35,7 @@ argparse() {
 			u) url=${OPTARG};;
 			o) output=${OPTARG};;
 			q) quality=${OPTARG};;
+			t) tspath=${OPTARG};;
 			?) error "Unknown option ${OPTARG}";;
 		esac
 	done
@@ -66,10 +71,15 @@ fi
 [ ! -d "$output" ] && echo "creating storage directory..." && mkdir -p "$output"
 
 #get timestamps
-echo "scraping timestamps..."
-timestamps=$(mktemp)
-youtube-dl --get-description "$url" 2> /dev/null | awk '{for(i=1; i<=NF; i++){if($i~/[0-9]+:[0-9]+/){print substr($0,index($0,$i))}}}' > $timestamps
-if egrep -q '^[^0-9]' $timestamps; then
+if [ -f "$tspath" ]; then
+	echo "using your timestamp file..."
+	timestamps=$tspath
+else
+	echo "scraping timestamps..."
+	timestamps=$(mktemp)
+	youtube-dl --get-description "$url" 2> /dev/null | awk '{for(i=1; i<=NF; i++){if($i~/[0-9]+:[0-9]+/){print substr($0,index($0,$i))}}}' > $timestamps
+fi
+if egrep -q '^[^0-9]' $timestamps || [ $(cat $timestamps | sed '/^$/d' | wc -l) -eq 0 ]]; then
 	echo "bad timestamps detected (lines must start with numbers separated by colons):" >> ./ytdlsplit.err
 	cat $timestamps >> ./ytdlsplit.err
 	echo "" >> ./ytdlsplit.err
