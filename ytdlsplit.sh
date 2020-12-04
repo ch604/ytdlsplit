@@ -3,27 +3,22 @@
 # version 1.0
 # github.com/ch604/ytdlsplit
 
-#TODO
-#ensure youtube-dl up to date
-#ensure ffmpeg installed and supports all required flags (min ver)
-#ensure mp3 libs installed for writing output
-
 error() { #print error and die
 	echo "ERROR: $1" >&2
 	exit 254
 }
 
 printhelp() {
-	echo "ytdlsplit - youtube-dl ffmpeg wrapper for splitting video mp3s
-at description timestamps
+	echo "ytdlsplit - youtube-dl and ffmpeg wrapper for splitting video
+mp3s at description timestamps
 
 usage: ytdlsplit -u \"URL\" -o path/to/output [-q 0]
 
 arguments:
 	-u \"URL\"	quoted URL to youtube-dl compatible video URL
 	-o PATH		path to output directory, will be created if missing
-	-q QUALITY	pass a Vx level (0-9) or specific bitrate (160K)
-			for output audio quality
+	-q QUALITY	pass a Vx level (0-9) or specific bitrate (192K)
+			for output audio quality (default is 160K)
 
 "
 exit 0
@@ -39,7 +34,6 @@ argparse() {
 			?) error "Unknown option ${OPTARG}";;
 		esac
 	done
-	[ -z "$url" -o -z "$output" ] && error "i'm missing something..."
 }
 
 makeitseconds() { # take a timestamp like 05:08 or 1:15:43 and turn it into integer seconds
@@ -59,12 +53,15 @@ makeitseconds() { # take a timestamp like 05:08 or 1:15:43 and turn it into inte
 }
 
 #now we start the main program!
+argparse "$@"
 if [ ! "$(which youtube-dl 2> /dev/null)" ] || [ ! "$(which ffmpeg 2> /dev/null)" ]; then
 	error "I couldnt find youtube-dl or ffmpeg binaries! Please make sure these are installed!"
 elif ! ffmpeg -hide_banner -formats | grep -q mp3; then
 	error "ffmpeg doesn't seem to support mp3 handling! (see ffmpeg -formats | grep mp3)"
 fi
-argparse "$@"
+[ -z "$url" -o -z "$output" ] && error "i'm missing something... -u and -o are required!"
+[ -z "$quality" ] && quality="160K"
+
 #find and make directory
 [ ! -d $output ] && echo "creating storage directory..." && mkdir -p $output
 
@@ -81,7 +78,7 @@ fi
 
 #download the mp3
 echo "emailing the RIAA..."
-youtube-dl --ignore-errors --format bestaudio --extract-audio --audio-format mp3 --audio-quality 160K --output $output'/temp.mp3' "$url" -q
+youtube-dl --ignore-errors --format bestaudio --extract-audio --audio-format mp3 --audio-quality $quality --output $output'/temp.mp3' "$url" -q
 
 #calculate song lengths and split the source mp3
 echo "splitting..."
