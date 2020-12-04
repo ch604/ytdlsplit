@@ -1,5 +1,5 @@
 # ytdlsplit
-Wrapper for youtube-dl and ffmpeg to collect mp3 output and split to individual files at timestamps from youtube descriptions. Checks the description of the video first for available timestamps and validates them before downloading. Calculates number of tracks for adding leading 0's to track numbers.
+Wrapper for youtube-dl and ffmpeg to collect mp3 output and split to individual files at timestamps from youtube descriptions. Checks the description of the video first for available timestamps and validates them before downloading. Calculates number of tracks for adding leading 0's to track numbers. Downloads video thumbnail as album art.
 ```
 [user@host2 ~]# ./ytdlsplit.sh -u https://www.youtube.com/watch?v=0nBYI0owpeY -o "/data/FFVII LoFi"
 creating storage directory...
