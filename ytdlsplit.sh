@@ -124,7 +124,7 @@ wget -q -O "$output/folder.jpg" https://img.youtube.com/vi/$(youtube-dl --get-id
 #cleanup temp.mp3 and $timestamps
 echo "cleaning up..."
 rm -f "$output/temp.mp3"
-rm -f $timestamps
+mv $timestamps "$output/timestamps.txt"
 
 echo "share and enjoy!"
 exit 0
