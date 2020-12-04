@@ -80,7 +80,7 @@ if [ -f "$tspath" ]; then
 else
 	echo "scraping timestamps..."
 	timestamps=$(mktemp)
-	youtube-dl --get-description "$url" 2> /dev/null | awk '{for(i=1; i<=NF; i++){if($i~/[0-9]+:[0-9]+/){print substr($0,index($0,$i))}}}' | tr '　' ' ' > $timestamps
+	youtube-dl --get-description "$url" 2> /dev/null | awk '{for(i=1; i<=NF; i++){if($i~/[0-9]+:[0-9]+/){print substr($0,index($0,$i))}}}' > $timestamps
 fi
 if egrep -q '^[^0-9]' $timestamps || [ $(cat $timestamps | sed '/^$/d' | wc -l) -eq 0 ]; then
 	echo "bad timestamps detected (lines must start with numbers separated by colons):" >> ./ytdlsplit.err
