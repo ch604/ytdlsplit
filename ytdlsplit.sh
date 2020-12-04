@@ -63,7 +63,7 @@ fi
 [ -z "$quality" ] && quality="160K"
 
 #find and make directory
-[ ! -d $output ] && echo "creating storage directory..." && mkdir -p $output
+[ ! -d "$output" ] && echo "creating storage directory..." && mkdir -p "$output"
 
 #get timestamps
 echo "scraping timestamps..."
@@ -78,7 +78,7 @@ fi
 
 #download the mp3
 echo "downloading music and emailing the RIAA..."
-youtube-dl -i --format bestaudio -x --audio-format mp3 --audio-quality $quality --output $output'/temp.file' "$url"
+youtube-dl -i --format bestaudio -x --audio-format mp3 --audio-quality $quality --output "$output"/temp.file "$url"
 
 #calculate song lengths and split the source mp3
 echo "splitting..."
@@ -91,18 +91,18 @@ while read -u9 line; do
 	endtime=$(grep -A1 -e "$line" $timestamps | tail -1 | awk '{print $1}' | makeitseconds)
 	length=$(($endtime - $starttime))
 	if [ $length -ne 0 ]; then
-		echo " writing file "$filename" from $starttime for $length seconds..."
-		ffmpeg -hide_banner -loglevel warning -ss $starttime -t $length -i $output/temp.mp3 -acodec copy "$output/$filename.mp3"
+		echo " writing file \"$filename\" from $starttime for $length seconds..."
+		ffmpeg -hide_banner -loglevel warning -ss $starttime -t $length -i "$output/temp.mp3" -acodec copy "$output/$filename.mp3"
 	else
-		echo " writing file "$filename" from $starttime for remainder of track..."
-		ffmpeg -hide_banner -loglevel warning -ss $starttime -i $output/temp.mp3 -acodec copy "$output/$filename.mp3"
+		echo " writing file \"$filename\" from $starttime for remainder of track..."
+		ffmpeg -hide_banner -loglevel warning -ss $starttime -i "$output/temp.mp3" -acodec copy "$output/$filename.mp3"
 	fi
 	let i+=1
 done 9< $timestamps
 
 #cleanup temp.mp3 and $timestamps
 echo "cleaning up..."
-rm -f $output/temp.mp3
+rm -f "$output/temp.mp3"
 rm -f $timestamps
 
 echo "share and enjoy!"
