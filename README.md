@@ -32,8 +32,24 @@ bash ytdlsplit.sh -u "URL" -o "/path/to/output directory" [-q QUALITY]
  
 -u URL"      URL to youtube-dl compatible video
 -o PATH      path to output directory, will be created if missing
--q QUALITY   pass a Vx level (0-9) or specific bitrate (192K)	for output audio quality (default is 160K)
+-q QUALITY   pass a Vx level (0-9) or specific bitrate (192K) for output audio quality (default is 160K)
 ```
 # Known Issues
 - Older versions of youtube-dl do not support full description download, and may not pull the full tracklist. An upgrade to version 2020.12.02 or later is recommended.
 - Doesn't support playlists, but you /probably/ wouldn't want to split those at timestamps anyway. Just use youtube-dl.
+- Timestamps are only scraped when they are not wrapped in other characters, like parentheses, and preceed the tracak name, as follows:
+```
+00:00 track 1
+next is 02:00 track 2
+
+and then we have 04:03 track 3
+```
+Preceeding characters and extra lines are OK, as above. For instance, however, the following formats will not work:
+```
+track 1 (00:00)
+
+02:00
+track 2
+
+[04:05] track 3
+```
