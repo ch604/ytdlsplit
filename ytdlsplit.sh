@@ -68,7 +68,7 @@ fi
 #get timestamps
 echo "scraping timestamps..."
 timestamps=$(mktemp)
-youtube-dl --get-description "$url" 2> /dev/null | awk '{for(i=1; i<=NF; i++){if($i~/[0-9]+\:[0-9]+/){print substr($0,index($0,$i))}}}' > $timestamps
+youtube-dl --get-description "$url" 2> /dev/null | awk '{for(i=1; i<=NF; i++){if($i~/[0-9]+:[0-9]+/){print substr($0,index($0,$i))}}}' > $timestamps
 if egrep -q '^[^0-9]' $timestamps; then
 	echo "bad timestamps detected (lines must start with numbers separated by colons):" >> ./ytdlsplit.err
 	cat $timestamps >> ./ytdlsplit.err
@@ -77,7 +77,7 @@ if egrep -q '^[^0-9]' $timestamps; then
 fi
 
 #download the mp3
-echo "emailing the RIAA..."
+echo "downloading music and emailing the RIAA..."
 youtube-dl --ignore-errors --format bestaudio --extract-audio --audio-format mp3 --audio-quality $quality --output $output'/temp.mp3' "$url" -q
 
 #calculate song lengths and split the source mp3
