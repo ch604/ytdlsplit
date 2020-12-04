@@ -100,6 +100,12 @@ while read -u9 line; do
 	let i+=1
 done 9< $timestamps
 
+#get cover art
+echo "getting cover art..."
+wget -q -O "$output/folder.jpg" https://img.youtube.com/vi/$(youtube-dl --get-id "$url")/maxresdefault.jpg
+[ $? -ne 0 ] && wget -q -O "$output/folder.jpg" https://img.youtube.com/vi/$(youtube-dl --get-id "$url")/hqdefault.jpg
+[ $? -ne 0 ] && echo " couldnt get art sorry"
+
 #cleanup temp.mp3 and $timestamps
 echo "cleaning up..."
 rm -f "$output/temp.mp3"
