@@ -72,6 +72,7 @@ fi
 
 #find and make directory
 [ ! -d "$output" ] && echo "creating storage directory..." && mkdir -p "$output"
+[ $(ls -A "$output" ] && error "$output is not empty!"
 
 #get timestamps
 if [ -f "$tspath" ]; then
