@@ -80,7 +80,7 @@ if [ -f "$tspath" ]; then
 else
 	echo "scraping timestamps..."
 	timestamps=$(mktemp)
-	youtube-dl --get-description "$url" 2> /dev/null | awk '{for(i=1; i<=NF; i++){if($i~/[0-9]+:[0-9]+/){print substr($0,index($0,$i))}}}' > $timestamps
+	youtube-dl --get-description "$url" 2> /dev/null | awk '{for(i=1; i<=NF; i++){if($i~/[0-9]+:[0-9]+/){print substr($0,index($0,$i))}}}' | tr '　' ' ' > $timestamps
 fi
 if egrep -q '^[^0-9]' $timestamps || [ $(cat $timestamps | sed '/^$/d' | wc -l) -eq 0 ]; then
 	echo "bad timestamps detected (lines must start with numbers separated by colons):" >> ./ytdlsplit.err
@@ -101,9 +101,9 @@ i=1
 #sigdig to get the number of leading 0's on the track number
 sigdig=$(($(cat $timestamps | wc -l | wc -c) - 1))
 while read -u9 line; do
-	filename="$(printf "%0"$sigdig"d\n" $i) - $(echo $line | awk '{print substr($0,index($0,$2))}' | tr '/' '_')"
-	starttime=$(echo $line | awk '{print $1}' | makeitseconds)
-	endtime=$(grep -A1 -e "$line" $timestamps | tail -1 | awk '{print $1}' | makeitseconds)
+	filename="$(printf "%0"$sigdig"d\n" $i) - $(echo $line | awk -F" |　" '{print substr($0,index($0,$2))}' | tr '/' '_')"
+	starttime=$(echo $line | awk -F" |　" '{print $1}' | makeitseconds)
+	endtime=$(grep -A1 -e "$line" $timestamps | tail -1 | awk -F" |　" '{print $1}' | makeitseconds)
 	length=$(($endtime - $starttime))
 	if [ $length -ne 0 ]; then
 		echo " writing file \"$filename\" from $starttime for $length seconds..."
