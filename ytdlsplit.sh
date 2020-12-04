@@ -68,7 +68,7 @@ elif ! ffmpeg -hide_banner -formats | grep -q mp3; then
 fi
 [ -z "$url" ] && error "i need a url!"
 [ -z "$quality" ] && quality="160K"
-[ -z "$output" ] && echo "getting video name for output directory..." && output=$(youtube-dl -e "$url")
+[ -z "$output" ] && echo "getting video name for output directory..." && output=$(youtube-dl -e "$url" | tr '/' '_')
 
 #find and make directory
 [ ! -d "$output" ] && echo "creating storage directory..." && mkdir -p "$output"
