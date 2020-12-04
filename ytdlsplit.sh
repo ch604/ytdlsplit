@@ -29,7 +29,7 @@ exit 0
 }
 
 argparse() {
-	while getopts :hu:o:q: arg; do
+	while getopts :hu:o:q:t: arg; do
 		case "${arg}" in
 			h) printhelp;;
 			u) url=${OPTARG};;
