@@ -1,6 +1,6 @@
 #!/bin/bash
 # ytdlsplit.sh
-# version 1.5
+# version 1.6
 # github.com/ch604/ytdlsplit
 
 error() { #print error and die
@@ -19,7 +19,7 @@ arguments:
 	-o PATH		path to output directory, will be created if missing.
 			if not provided, video name will be used in current
 			directory.
-	-q QUALITY	pass a Vx level (0-9) or specific bitrate (192K)
+	-q QUALITY	pass a Vx level (0-9) or specific bitrate (like 192K)
 			for output audio quality (default is 160K).
 	-t PATH		path to preformatted timestamp file, in the format:
 
@@ -67,7 +67,7 @@ elif ! ffmpeg -hide_banner -formats | grep -q mp3; then
 	error "ffmpeg doesn't seem to support mp3 handling! (see ffmpeg -formats | grep mp3)"
 fi
 [ -z "$url" ] && error "i need a url!"
-[ -z "$quality" ] && quality="160K"
+if [ -z "$quality" ] || ([[ ! "$quality" =~ ^[0-9]{2,3}K$ ]] && [[ ! "$quality" =~ ^[0-9]$ ]]); then quality="160K"; fi
 [ -z "$output" ] && echo "getting video name for output directory..." && output=$(youtube-dl -e "$url" | tr '/' '_')
 
 #find and make directory

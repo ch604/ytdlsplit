@@ -32,7 +32,7 @@ bash ytdlsplit.sh -u "URL" -o "/path/to/output directory" [-q QUALITY] [-t "path
  
 -u URL"      URL to youtube-dl compatible video
 -o PATH      path to output directory, will be created if missing
--q QUALITY   pass a Vx level (0-9) or specific bitrate (192K) for output audio quality (default is 160K)
+-q QUALITY   pass a Vx level (0-9) or specific bitrate (96K-320K) for output audio quality (default is 160K if invalid or no quality passed)
 -t PATH      path to preformatted timestamp file, in the format:
 
              00:00 trackname
