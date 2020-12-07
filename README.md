@@ -58,5 +58,6 @@ track 2
 
 [04:05] track 3               #invalid chars joined to timestamp
 6.55 track 4                  #minutes and seconds need to be separated with a colon
+07:45 - track 5               #timestamp will technically work, but with extra separators between the given track number and the title
 ```
-In these cases, create your own timestamp file and use `-t` option.
+In these cases, you can create and format your own timestamp file, and use `-t` option.
