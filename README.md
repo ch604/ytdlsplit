@@ -30,7 +30,7 @@ youtube-dl (min 2020 version) and ffmpeg (compiled with mp3 support) in your $PA
 ```
 bash ytdlsplit.sh -u "URL" -o "/path/to/output directory" [-q QUALITY] [-t "path/to/timestamps"]
  
--u URL"      URL to youtube-dl compatible video
+-u URL       URL to youtube-dl compatible video
 -o PATH      path to output directory, will be created if missing
 -q QUALITY   pass a Vx level (0-9) or specific bitrate (96K-320K) for output audio quality (default is 160K if invalid or no quality passed)
 -t PATH      path to preformatted timestamp file, in the format:
