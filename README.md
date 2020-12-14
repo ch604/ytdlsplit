@@ -45,9 +45,9 @@ bash ytdlsplit.sh -u "URL" -o "/path/to/output directory" [-q QUALITY] [-t "path
 - Timestamps are only scraped when they are not wrapped in other characters, like parentheses, and preceed the track name, as follows:
 ```
 00:00 track 1                                 #ideal setup
-next is 2:00 マニキュア                         #unicode is ok!
+next is 2:00 マニキュア                         #unicode or leading chars are ok!
 
-and then we have 04:03 芳野藤丸/Who Are You     #this forward slash will be turned into an underscore
+3. 04:03 芳野藤丸/Who Are You                   #this forward slash will be turned into an underscore
 ```
 Preceeding characters and extra lines are OK, as above. For instance, however, the following formats will not work:
 ```
