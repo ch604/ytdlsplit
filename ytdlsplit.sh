@@ -72,7 +72,7 @@ if [ -z "$quality" ] || ([[ ! "$quality" =~ ^[0-9]{2,3}K$ ]] && [[ ! "$quality" 
 
 #find and make directory
 [ ! -d "$output" ] && echo "creating storage directory..." && mkdir -p "$output"
-[ $(ls -A "$output" ] && error "$output is not empty!"
+[ $(ls -A "$output") ] && error "$output is not empty!"
 
 #get timestamps
 if [ -f "$tspath" ]; then
